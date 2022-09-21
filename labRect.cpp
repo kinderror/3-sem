@@ -35,14 +35,23 @@ public:
     Rectangle(Point const &np): p{np.x, np.y} {} 
     
     Rectangle operator+(Rectangle const &rha) const {
-        
+        return (p.maxx(rha.p)).maxy(rha.p);
     }
     
     Rectangle operator*(Rectangle const &rha) const {
+        return (p.minx(rha.p)).miny(rha.p);
     }
+    void print() const { p.print(); }
 };
 
 int main() {
-    Rectangle R = Rectangle();
+    Point p_A = Point(1, 2);
+    Point p_B = Point(2, 1);
+    Rectangle A = Rectangle(p_A);
+    Rectangle B = Rectangle(p_B);
+    Rectangle C = A + B;
+    Rectangle D = A * B;
+    C.print();
+    D.print();
     return 0;
 }
