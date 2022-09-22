@@ -29,9 +29,9 @@ struct Point {
 };
 
 class Rectangle {
-public:
     Point p;
     
+    public:
     Rectangle(): p{0, 0} {}
 
     Rectangle(Point const &np): p{np.x, np.y} {}
@@ -44,6 +44,9 @@ public:
         return Rectangle((p.minx(rha.p)).miny(rha.p));
     }
     void print() const { p.print(); }
+    Point get_point() {
+        return p;
+    }
 };
 
 void translate(std::string expr, std::vector<int> &coord, std::vector<std::string> &oper) {
@@ -74,12 +77,12 @@ void iteration(std::vector<int> &coord, std::vector<std::string> &oper, int idx,
     Rectangle r_2 = Rectangle(p_2);
     if (mult) {
         Rectangle r_3 = r_1 * r_2;
-        coord[2 * idx] = r_3.p.x;
-        coord[2 * idx + 1] = r_3.p.y;
+        coord[2 * idx] = r_3.get_point().x;
+        coord[2 * idx + 1] = r_3.get_point().y;
     } else {
         Rectangle r_3 = r_1 + r_2;
-        coord[2 * idx] = r_3.p.x;
-        coord[2 * idx + 1] = r_3.p.y;
+        coord[2 * idx] = r_3.get_point().x;
+        coord[2 * idx + 1] = r_3.get_point().y;
     }
     oper.erase(oper.begin() + idx);
     coord.erase(coord.begin() + 2 * idx + 2, coord.begin() + 2 * idx + 4);
