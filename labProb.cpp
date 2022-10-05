@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <fstream>
 
 using State = int;
 
@@ -99,11 +100,34 @@ public:
     }
 };
 
+void first_graph(ArbitraryState &s, ProbabilityTest &pt, std::ofstream &out)
+{
+    for (int i = 200; i < 20000; i+=200) 
+    {
+        out << i << " " << pt.test(s, i, 1000) << std::endl;
+    }
+}
+
+void second_graph(ProbabilityTest &pt, std::ofstream &out)
+{
+    float sum;
+    for (int i = 10; i < 1000; i+=10) 
+    {
+        sum = 0;
+        SegmentState s(-i, +i);
+        for (int j = 10; j <= 1000; j+=10)
+        {
+            sum += pt.test(s, 20000, j);
+        }
+        out << i << " " << sum / 100 << std::endl;
+    }
+}
+
 int main() 
 {
     DiscreteState d(0);
-    SegmentState s1(0, 100);
-    SegmentState s2(70, 170);
+    SegmentState s1(-100, 500);
+    SegmentState s2(-700, 200);
     UnionState A(s1, s2);
     IntersectionState B(s1, s2);
     InversionState C(s1);
@@ -113,5 +137,9 @@ int main()
     std::cout << pt.test(A, 20000, 1) << std::endl;
     std::cout << pt.test(B, 20000, 1) << std::endl;
     std::cout << pt.test(C, 20000, 1) << std::endl;
+    std::ofstream out;
+    out.open("dataProb.txt");
+    //first_graph(s1, pt, out);
+    //second_graph(pt, out);
     return 0;
 }
