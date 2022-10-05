@@ -34,6 +34,46 @@ public:
     }
 };
 
+class UnionState: public ArbitraryState
+{
+private:
+    ArbitraryState &s1;
+    ArbitraryState &s2;
+public:
+    UnionState(ArbitraryState &s1, ArbitraryState &s2): 
+        ArbitraryState(), s1(s1), s2(s2) { }
+    bool contains(State s) const override
+    {
+        return s1.contains(s) or s2.contains(s);
+    } 
+};
+
+class IntersectionState: public ArbitraryState
+{
+private:
+    ArbitraryState &s1;
+    ArbitraryState &s2;
+public:
+    IntersectionState(ArbitraryState &s1, ArbitraryState &s2): 
+        ArbitraryState(), s1(s1), s2(s2) { }
+    bool contains(State s) const override
+    {
+        return s1.contains(s) and s2.contains(s);
+    } 
+};
+
+class InversionState: public ArbitraryState
+{
+private:
+    ArbitraryState &s1;
+public:
+    InversionState(ArbitraryState &s1): ArbitraryState(), s1(s1) { }
+    bool contains(State s) const override
+    {
+        return !(s1.contains(s));
+    } 
+};
+
 class ProbabilityTest 
 {
 private:
@@ -62,9 +102,16 @@ public:
 int main() 
 {
     DiscreteState d(0);
-    SegmentState s(0, 100);
+    SegmentState s1(0, 100);
+    SegmentState s2(70, 170);
+    UnionState A(s1, s2);
+    IntersectionState B(s1, s2);
+    InversionState C(s1);
     ProbabilityTest pt(-1000, 1000);
     std::cout << pt.test(d, 20000, 1) << std::endl;
-    std::cout << pt.test(s, 20000, 1) << std::endl;
+    std::cout << pt.test(s1, 20000, 1) << std::endl;
+    std::cout << pt.test(A, 20000, 1) << std::endl;
+    std::cout << pt.test(B, 20000, 1) << std::endl;
+    std::cout << pt.test(C, 20000, 1) << std::endl;
     return 0;
 }
