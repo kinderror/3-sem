@@ -53,7 +53,7 @@ public:
     } 
 };
 
-class Bishop: public Piece
+class Bishop: public virtual Piece
 {
 public:
     Bishop(): Piece() {}
@@ -67,7 +67,7 @@ public:
     } 
 };
 
-class Rook: public Piece
+class Rook: public virtual Piece
 {
 public:
     Rook(): Piece() {}
@@ -81,18 +81,16 @@ public:
     } 
 };
 
-class Queen: public Piece
+class Queen: public Bishop, public Rook
 {
 public:
-    Queen(): Piece() {}
-    Queen(Cell c): Piece(c) {}
-    ~Queen() override {}
+    Queen(): Bishop(), Rook() {}
+    Queen(Cell c): Bishop(c), Rook(c) {}
+    ~Queen() override {} 
     bool available(const Cell &c) const override
     {
-        int dx = c.get_x() - position().get_x();
-        int dy = c.get_y() - position().get_y();
-        return dx == 0 or dy == 0 or dx * dx == dy * dy;
-    } 
+        return Rook::available(c) or Bishop::available(c);
+    }
 };
 
 class Knight: public Piece
