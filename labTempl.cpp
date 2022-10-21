@@ -121,17 +121,16 @@ public:
 int main()
 {
     IntComparator compare = IntComparator();
-    /*int *buffer = new int[10];
+    int *buffer = new int[10];
     for(int i = 0; i < 10; i++)
     {
         buffer[i] = 10 - i;
     }
-    std::cout << "sth";
     quick_sort<int>(compare, buffer, 0, 9);
     for(int i = 0; i < 10; i++)
     {
         std::cout << buffer[i] << " ";
-    }*/
+    }
     PriorityQueue<int> queue(compare);
     if(queue.is_empty()) 
     {
@@ -140,7 +139,6 @@ int main()
     for(int i = 0; i < 10; i++)
     {
         queue.push(i + 1);
-        queue.print();
     }
     queue.poll();
     queue.print();
