@@ -17,20 +17,18 @@ struct IntComparator final: Comparator<int>
 template<typename T>
 int partition_by_number(Comparator<T> &compare, T *buffer, int left, int right) 
 {
-    T pivot = buffer[(left + right) / 2];
-    while(true) 
+    T pivot = buffer[right];
+    int pivot_idx = left;
+    for(int idx = left; idx < right; idx++)
     {
-        while (left < sizeof(buffer) - 1 && compare(buffer[left], pivot)) left++;
-        while (right > 0 && compare(pivot, buffer[right])) right--;
-        if (left >= right) return right;
-        std::swap(buffer[left], buffer[right]);
-        if (left < sizeof(buffer) - 1) left++;
-        if (right > 0) right--;
-        for(int i = 0; i < 10; i++)
+        if(compare(buffer[idx], pivot))
         {
-            std::cout << buffer[i] << " ";
+            std::swap(buffer[idx], buffer[pivot_idx]);
+            pivot_idx++;
         }
     }
+    std::swap(buffer[pivot_idx], buffer[right]);
+    return pivot_idx;
 }
 
 template<typename T>
@@ -38,51 +36,53 @@ void quick_sort(Comparator<T> &compare, T *buffer, int left, int right) {
     if (left >= right) {
         return;
     }
-    int split = partition_by_number(compare, buffer, left, right);
-    quick_sort(compare, buffer, left, split);
-    quick_sort(compare, buffer, split++, right);
+    int pivot = partition_by_number(compare, buffer, left, right);
+    quick_sort(compare, buffer, left, pivot - 1);
+    quick_sort(compare, buffer, pivot + 1, right);
 }
 
 template<typename T>
 class PriorityQueue
 {
 private:
+    size_t buffer_size;
     T *buffer;
     Comparator<T> &compare;
 public:
     PriorityQueue(Comparator<T> &compare): 
-        buffer(new T[0]), compare(compare) {}
+        buffer_size(0), buffer(new T[0]), compare(compare) {}
     void push(T value)
     {
-        int idx = 0, size = sizeof(buffer);
-        T *temp = new T[size + 1];
-        for(; idx < size; idx++)
+        T *temp = new T[buffer_size + 1];
+        for(size_t pos = 0; pos < buffer_size; pos++)
         {
-            temp[idx] = buffer[idx];
+            temp[pos] = buffer[pos];
         }
-        temp[idx++] = value;
-        while(idx > 0 && 
-            compare(temp[(idx - 1) / 2], temp[idx]))
+        temp[buffer_size] = value;
+        size_t pos = buffer_size;
+        while(pos > 0 && 
+            compare(temp[(pos - 1) / 2], temp[pos]))
         {
-            std::swap(temp[(idx - 1) / 2], temp[idx]);
-            idx = (idx - 1) / 2;
+            std::swap(temp[(pos - 1) / 2], temp[pos]);
+            pos = (pos - 1) / 2;
         }
         delete [] buffer;
         buffer = temp;
+        buffer_size++;
     }
     void heapify()
     {
         int idx = 0, left = 1, right = 2,
-            largest = 0, size = sizeof(buffer);
+            largest = 0;
         
         while(true)
         {
-            if(left < size && 
+            if(left < buffer_size && 
                 compare(buffer[largest], buffer[left]))
             {
                 largest = left;
             }
-            if(right < size &&
+            if(right < buffer_size &&
                 compare(buffer[largest], buffer[right]))
             {
                 largest = right;
@@ -94,44 +94,48 @@ public:
     }
     void poll()
     {
-        int size = sizeof(buffer);
-        std::swap(buffer[0], buffer[size - 1]);
-        T *temp = new T[size - 1];
-        for(int idx; idx < size - 1; idx++)
+        std::swap(buffer[0], buffer[buffer_size - 1]);
+        T *temp = new T[buffer_size - 1];
+        for(size_t pos; pos < buffer_size - 1; pos++)
         {
-            temp[idx] = buffer[idx];
+            temp[pos] = buffer[pos];
         }
         delete [] buffer;
         buffer = temp;
+        buffer_size--;
         heapify();
     }
     void print() const
     {
-        for(int idx = 0; idx < sizeof(buffer); idx++)
+        for(size_t pos = 0; pos < buffer_size; pos++)
         {
-            std::cout << buffer[idx] << " ";
+            std::cout << buffer[pos] << " ";
         }
         std::cout << "\n";
     }
     T peek() const { return buffer[0]; }
-    bool is_empty() const { return sizeof(buffer) == 0; }
-    void free() { delete [] buffer; }
+    bool is_empty() const { return buffer_size == 0; }
+    void free() 
+    { 
+        delete [] buffer; 
+        buffer_size = 0;
+    }
 };
 
 int main()
 {
     IntComparator compare = IntComparator();
-    /*int *buffer = new int[10];
+    int *buffer = new int[10];
     for(int i = 0; i < 10; i++)
     {
         buffer[i] = 10 - i;
     }
-    std::cout << "sth";
     quick_sort<int>(compare, buffer, 0, 9);
     for(int i = 0; i < 10; i++)
     {
         std::cout << buffer[i] << " ";
-    }*/
+    }
+    std::cout << "\n";
     PriorityQueue<int> queue(compare);
     if(queue.is_empty()) 
     {
@@ -140,7 +144,6 @@ int main()
     for(int i = 0; i < 10; i++)
     {
         queue.push(i + 1);
-        queue.print();
     }
     queue.poll();
     queue.print();
