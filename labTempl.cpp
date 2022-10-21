@@ -135,10 +135,7 @@ int main()
     {
         std::cout << buffer[i] << " ";
     }
-<<<<<<< HEAD
     std::cout << "\n";
-=======
->>>>>>> db1b090a46d41a9e81f0544fce964f2899084382
     PriorityQueue<int> queue(compare);
     if(queue.is_empty()) 
     {
