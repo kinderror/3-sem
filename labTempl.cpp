@@ -146,7 +146,7 @@ int main()
         queue.push(i + 1);
     }
     queue.poll();
-    queue.print();
     std::cout << queue.peek() << "\n";
+    queue.print();
     return 0;
 }
